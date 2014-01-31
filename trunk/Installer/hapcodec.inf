@@ -1,0 +1,60 @@
+;
+; Hap DirectShow Video Codec
+;
+; Copyright (c) 2013
+;
+;
+[version]
+signature="$CHICAGO$"
+
+[DefaultInstall]
+CopyFiles=HAP.Files.Inf,HAP.Files.Dll
+AddReg=HAP.Reg
+
+[DefaultUnInstall]
+DelFiles=HAP.Files.Dll,HAP.Files.Inf
+DelReg=HAP.Reg
+
+[SourceDisksNames]
+1="Hap DirectShow Video Codec","",1
+
+[SourceDisksFiles]
+HAPCODEC.INF=1
+HAPCODEC.DLL=1
+
+[DestinationDirs]
+HAP.Files.Inf=17
+HAP.Files.Dll=11
+
+[HAP.Files.Inf]
+HAPCODEC.INF
+
+[HAP.Files.Dll]
+HAPCODEC.DLL
+
+[HAP.Reg]
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",Description,,"Hap video codec"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",Driver,,"hapcodec.dll"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",FriendlyName,,"Hap video codec"
+
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",Description,,"Hap video codec"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",Driver,,"hapcodec.dll"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",FriendlyName,,"Hap video codec"
+
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,Description,,"Hap Alpha video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,Driver,,"hapcodec.dll"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,FriendlyName,,"Hap Alpha video codec"
+
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,Description,,"Hap Q video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,Driver,,"hapcodec.dll"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,FriendlyName,,"Hap Q video codec"
+
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\drivers.desc",hapcodec.dll,,"HAP video codec"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.HAP",,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.HAP ",,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HAPA,,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HAPQ,,"hapcodec.dll"
+
+HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC
+HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,DisplayName,,"Hap DirectShow Video Codec (Remove Only)"
+HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,UninstallString,,"rundll.exe setupx.dll,InstallHinfSection DefaultUninstall 132 %17%\HAPCODEC.INF"
