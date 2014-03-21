@@ -79,13 +79,13 @@ inline void * lag_aligned_malloc( void *ptr, int size, int align, char *str ) {
 #define FOURCC_DXTY  (MAKEFOURCC('D','X','T','Y'))
 #define FOURCC_dxty  (MAKEFOURCC('d','x','t','y'))
 
-static DWORD FOURCC_HAP = MAKEFOURCC('H','A','P',' ');
-static DWORD FOURCC_HAPA = MAKEFOURCC('H','A','P','A');
-static DWORD FOURCC_HAPQ = MAKEFOURCC('H','A','P','Q');
+static DWORD FOURCC_HAP = MAKEFOURCC('H','a','p','1');
+static DWORD FOURCC_HAPA = MAKEFOURCC('H','a','p','5');
+static DWORD FOURCC_HAPQ = MAKEFOURCC('H','a','p','Y');
 
-static DWORD FOURCC_hap = MAKEFOURCC('h','a','p',' ');
-static DWORD FOURCC_hapa = MAKEFOURCC('h','a','p','a');
-static DWORD FOURCC_hapq = MAKEFOURCC('h','a','p','q');
+static DWORD FOURCC_hap = MAKEFOURCC('h','a','p','1');
+static DWORD FOURCC_hapa = MAKEFOURCC('h','a','p','5');
+static DWORD FOURCC_hapq = MAKEFOURCC('h','a','p','y');
 
 
 
