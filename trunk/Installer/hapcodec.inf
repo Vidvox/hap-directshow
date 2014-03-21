@@ -33,27 +33,22 @@ HAPCODEC.INF
 HAPCODEC.DLL
 
 [HAP.Reg]
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",Description,,"Hap video codec"
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",Driver,,"hapcodec.dll"
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP",FriendlyName,,"Hap video codec"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap1",Description,,"Hap video codec"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap1",Driver,,"hapcodec.dll"
+HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap1",FriendlyName,,"Hap video codec"
 
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",Description,,"Hap video codec"
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",Driver,,"hapcodec.dll"
-HKLM,"SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAP ",FriendlyName,,"Hap video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap5,Description,,"Hap Alpha video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap5,Driver,,"hapcodec.dll"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.Hap5,FriendlyName,,"Hap Alpha video codec"
 
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,Description,,"Hap Alpha video codec"
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,Driver,,"hapcodec.dll"
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPA,FriendlyName,,"Hap Alpha video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HapY,Description,,"Hap Q video codec"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HapY,Driver,,"hapcodec.dll"
+HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HapY,FriendlyName,,"Hap Q video codec"
 
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,Description,,"Hap Q video codec"
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,Driver,,"hapcodec.dll"
-HKLM,SYSTEM\CurrentControlSet\Control\MediaResources\icm\VIDC.HAPQ,FriendlyName,,"Hap Q video codec"
-
-HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\drivers.desc",hapcodec.dll,,"HAP video codec"
-HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.HAP",,"hapcodec.dll"
-HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.HAP ",,"hapcodec.dll"
-HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HAPA,,"hapcodec.dll"
-HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HAPQ,,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\drivers.desc",hapcodec.dll,,"Hap video codec"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.Hap1",,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.Hap5,,"hapcodec.dll"
+HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HapY,,"hapcodec.dll"
 
 HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC
 HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,DisplayName,,"Hap DirectShow Video Codec (Remove Only)"
