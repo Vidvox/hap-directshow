@@ -2,7 +2,7 @@
 ; ________________________________________________________________________
 
 !define     PRODUCTNAME             "Hap Codec"
-!define     SHORTVERSION            "1.0.1"
+!define     SHORTVERSION            "1.0.2"
 !define     TITLE             "${PRODUCTNAME} ${SHORTVERSION}"
 
 SetCompressor /Solid lzma

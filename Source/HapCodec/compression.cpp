@@ -325,17 +325,21 @@ CodecInst::Compress(ICCOMPRESS* icinfo, DWORD dwSize)
 	if (_useSnappy)
 		compressorOptions |= HapCompressorSnappy;
 
+	unsigned long maxOutputSize = icinfo->dwFrameSize;
+	if (icinfo->lpbiOutput->biSizeImage > maxOutputSize)
+		maxOutputSize = icinfo->lpbiOutput->biSizeImage;
+
 	unsigned long outputBufferBytesUsed = 0;
 	switch (_codecType)
 	{
 	case Hap:
-		outputBufferBytesUsed = CompressHap(input, icinfo->lpOutput, icinfo->lpbiOutput->biSizeImage, compressorOptions);
+		outputBufferBytesUsed = CompressHap(input, icinfo->lpOutput, maxOutputSize, compressorOptions);
 		break;
 	case HapAlpha:
-		outputBufferBytesUsed = CompressHapAlpha(input, icinfo->lpOutput, icinfo->lpbiOutput->biSizeImage, compressorOptions);
+		outputBufferBytesUsed = CompressHapAlpha(input, icinfo->lpOutput, maxOutputSize, compressorOptions);
 		break;
 	case HapQ:
-		outputBufferBytesUsed = CompressHapQ(input, icinfo->lpOutput, icinfo->lpbiOutput->biSizeImage, compressorOptions);
+		outputBufferBytesUsed = CompressHapQ(input, icinfo->lpOutput, maxOutputSize, compressorOptions);
 		break;
 	}
 
