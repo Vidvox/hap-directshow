@@ -148,7 +148,7 @@ BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 		{
 			HWND snappyHandle = GetDlgItem(hwndDlg, IDC_SNAPPY);
 			EnableWindow(snappyHandle, false);
-			CheckDlgButton(hwndDlg, IDC_SNAPPY, true);
+			//CheckDlgButton(hwndDlg, IDC_SNAPPY, true);
 		}
 #endif
 

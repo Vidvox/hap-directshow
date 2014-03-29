@@ -15,8 +15,11 @@ void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality)
 	const char * DxtQualityStrings[3] = {"HIGH", "GOOD", "LOW "};
 	if ( RegCreateKeyEx(HKEY_CURRENT_USER,kRootRegistryKey,0,NULL,REG_OPTION_NON_VOLATILE,KEY_WRITE,NULL,&regkey,&dp) == ERROR_SUCCESS)
 	{
-		RegSetValueEx(regkey,"NullFrames",0,REG_DWORD,(unsigned char*)&nullframes,4);
-		RegSetValueEx(regkey,"UseSnappy",0,REG_DWORD,(unsigned char*)&useSnappy,4);
+		DWORD data = 0;
+		if (nullframes) data = 1;
+		RegSetValueEx(regkey,"NullFrames",0,REG_DWORD,(unsigned char*)&data,4);
+		if (useSnappy) data = 1; else data = 0;
+		RegSetValueEx(regkey,"UseSnappy",0,REG_DWORD,(unsigned char*)&data,4);
 		RegSetValueEx(regkey,"DXTQuality",0,REG_SZ,(unsigned char*)DxtQualityStrings[dxtQuality],4);
 		RegCloseKey(regkey);
 	}
