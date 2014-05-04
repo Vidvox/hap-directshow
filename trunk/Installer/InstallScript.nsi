@@ -1,8 +1,8 @@
 ; Installation Script (C) 2013-2014 RenderHeads Ltd.  All Rights Reserved.
 ; ________________________________________________________________________
 
-!define     PRODUCTNAME             "Hap Codec"
-!define     SHORTVERSION            "1.0.4"
+!define     PRODUCTNAME             "Hap DirectShow Codec"
+!define     SHORTVERSION            "1.0.5"
 !define     TITLE             "${PRODUCTNAME} ${SHORTVERSION}"
 
 SetCompressor /Solid lzma
@@ -25,7 +25,7 @@ FunctionEnd
 Name "${TITLE}"
 Caption "${TITLE}"
 
-OutFile "HapCodecSetup.exe"
+OutFile "HapDirectShowCodecSetup.exe"
 
 ;Icon			"icon.png"
 
@@ -47,6 +47,7 @@ PageExEnd
 Section "FilesInstall"
 	SetShellVarContext all
 
+	; 64-bit install
 	${if} ${RunningX64}
 		SetRegView 64
 		;MessageBox MB_OK "running on x64"
@@ -54,29 +55,22 @@ Section "FilesInstall"
 		${DisableX64FSRedirection}
 		File "hapcodec.inf"
 		File "Build64\HapCodec.dll"
-;		File "Build64\HapTransform.dll"		
-		ExecWait '$SYSDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultInstall 132 $SYSDIR\hapcodec.inf'
-;		ExecWait '$SYSDIR\regsvr32.exe /S HapTransform.dll'
+		ExecWait '$OUTDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultInstall 132 $OUTDIR\hapcodec.inf'
+;		ExecWait '$OUTDIR\regsvr32.exe /S HapTransform.dll'
 
 		${EnableX64FSRedirection}
 		SetOutPath $WINDIR\SysWOW64
-		File "hapcodec.inf"
-		File "Build32\HapCodec.dll"
-;		File "Build32\HapTransform.dll"			
-		ExecWait '$WINDIR\SysWOW64\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultInstall 132 $WINDIR\SysWOW64\hapcodec.inf'
-;		ExecWait '$WINDIR\SysWOW64\regsvr32.exe /S HapTransform.dll'
-
 		SetRegView 32
 	${else}
 		;MessageBox MB_OK "running on x86"
 		SetOutPath $SYSDIR
+	${endif}
+
 		File "hapcodec.inf"
 		File "Build32\HapCodec.dll"
-;		File "Build32\HapTransform.dll"			
+		ExecWait '$OUTDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultInstall 132 $OUTDIR\hapcodec.inf'
+;		ExecWait '$OUTDIR\regsvr32.exe /S HapTransform.dll'
 
-		ExecWait '$SYSDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultInstall 132 $SYSDIR\hapcodec.inf'
-;		ExecWait '$SYSDIR\regsvr32.exe /S HapTransform.dll'
-	${endif}
 SectionEnd
 
 
@@ -94,7 +88,6 @@ Section "Registry"
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "NoModify" 1
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "NoRepair" 1
    	WriteUninstaller "$INSTDIR\uninstall.exe"
-
 
 	CreateDirectory "$SMPROGRAMS\${PRODUCTNAME}"
 	CreateShortCut "$SMPROGRAMS\${PRODUCTNAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe"
@@ -114,22 +107,26 @@ Section "Uninstall"
 	${if} ${RunningX64}
 		;MessageBox MB_OK "running on x64"
 
+		${DisableX64FSRedirection}
+		SetOutPath $SYSDIR
 		SetRegView 64
-		ExecWait '$SYSDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $SYSDIR\hapcodec.inf'
-		Delete '$SYSDIR\hapcodec.inf'
-		Delete '$SYSDIR\HapCodec.dll'
-;		Delete '$SYSDIR\HapTransform.dll'
+		ExecWait '$OUTDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\HapCodec.dll'
 
-		ExecWait '$WINDIR\SysWOW64\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $WINDIR\SysWOW64\hapcodec.inf'
-		Delete '$WINDIR\SysWOW64\hapcodec.inf'
-		Delete '$WINDIR\SysWOW64\HapCodec.dll'
-;		Delete '$WINDIR\SysWOW64\HapTransform.dll'
+		${EnableX64FSRedirection}
 		SetRegView 32
+		SetOutPath $WINDIR\SysWOW64
+		ExecWait '$OUTDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\HapCodec.dll'
+		
 	${else}
 		;MessageBox MB_OK "running on x86"
-		ExecWait '$SYSDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $SYSDIR\hapcodec.inf'
-		Delete '$SYSDIR\hapcodec.inf'
-		Delete '$SYSDIR\HapCodec.dll'
+		SetOutPath $SYSDIR
+		ExecWait '$OUTDIR\RUNDLL32.EXE SETUPAPI.DLL,InstallHinfSection DefaultUninstall 132 $OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\hapcodec.inf'
+		;Delete '$OUTDIR\HapCodec.dll'
 	${endif}
 
 	; remove registry keys
