@@ -50,6 +50,7 @@ HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32","VIDC.Hap1",,"hapc
 HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.Hap5,,"hapcodec.dll"
 HKLM,"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Drivers32",VIDC.HapY,,"hapcodec.dll"
 
-HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC
-HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,DisplayName,,"Hap DirectShow Video Codec (Remove Only)"
-HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,UninstallString,,"rundll.exe setupx.dll,InstallHinfSection DefaultUninstall 132 %17%\HAPCODEC.INF"
+;Uninstalling is handled via the main installer.
+;HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC
+;HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,DisplayName,,"Hap DirectShow Video Codec (Remove Only)"
+;HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\HAPCODEC,UninstallString,,"rundll.exe setupx.dll,InstallHinfSection DefaultUninstall 132 %17%\HAPCODEC.INF"

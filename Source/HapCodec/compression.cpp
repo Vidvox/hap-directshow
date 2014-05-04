@@ -2,10 +2,14 @@
 #include "interface.h"
 #include "hapcodec.h"
 #include <float.h>
+#include <omp.h>
 #include <squish/squish.h>
 #include <hap/hap.h>
 #include <hap/YCoCgDXT.h>
 #include <hap/YCoCg.h>
+
+#define USE_OPENMP_DXT
+#define NUM_THREADS 4
 
 // initalize the codec for compression
 DWORD 
@@ -16,6 +20,7 @@ CodecInst::CompressBegin(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpbiOut)
 		CompressEnd();
 	}
 	_isStarted = 0;
+	omp_set_num_threads(NUM_THREADS);
 
 	if ( int error = CompressQuery(lpbiIn, lpbiOut) != ICERR_OK )
 	{
@@ -100,15 +105,22 @@ void
 ConvertBGRAtoRGBA(int width, int height, const unsigned char* a, unsigned char* b)
 {
 	int numPixels = width * height;
-	for (int i = 0; i < numPixels; i++)
+#pragma omp parallel
 	{
-		b[0] = a[2];
-		b[1] = a[1];
-		b[2] = a[0];
-		b[3] = a[3];
+		int id = omp_get_thread_num();
+		const unsigned char* aa = a + (numPixels * 4 / NUM_THREADS) * id;
+		unsigned char* bb = b + (numPixels * 4 / NUM_THREADS) * id;
+	#pragma omp for
+		for (int i = 0; i < numPixels; i++)
+		{
+			bb[0] = aa[2];
+			bb[1] = aa[1];
+			bb[2] = aa[0];
+			bb[3] = aa[3];
 
-		a += 4;
-		b += 4;
+			aa += 4;
+			bb += 4;
+		}
 	}
 }
 
@@ -116,22 +128,29 @@ void
 Convert24bppTo32bpp(int width, int height, bool swapRedBlue, const unsigned char* a, unsigned char* b)
 {
 	int numPixels = width * height;
-	for (int i = 0; i < numPixels; i++)
+#pragma omp parallel
 	{
-		b[0] = a[0];
-		b[1] = a[1];
-		b[2] = a[2];
-		b[3] = 255;
-
-		if (swapRedBlue)
+		int id = omp_get_thread_num();
+		const unsigned char* aa = a + (numPixels * 3 / NUM_THREADS) * id;
+		unsigned char* bb = b + (numPixels * 4 / NUM_THREADS) * id;
+#pragma omp for
+		for (int i = 0; i < numPixels; i++)
 		{
-			unsigned char temp = b[0];
-			b[0] = b[2];
-			b[2] = temp;
-		}
+			bb[0] = aa[0];
+			bb[1] = aa[1];
+			bb[2] = aa[2];
+			bb[3] = 255;
 
-		a += 3;
-		b += 4;
+			if (swapRedBlue)
+			{
+				unsigned char temp = bb[0];
+				bb[0] = bb[2];
+				bb[2] = temp;
+			}
+
+			aa += 3;
+			bb += 4;
+		}
 	}
 }
 
@@ -358,15 +377,32 @@ CodecInst::Compress(ICCOMPRESS* icinfo, DWORD dwSize)
 
 	return (DWORD)ret_val;
 }
-
 unsigned long
 CodecInst::CompressHap(const unsigned char* inputBuffer, void* outputBuffer, unsigned long outputBufferBytes, unsigned int compressorOptions)
 {
 	unsigned long outputBufferBytesUsed = 0;
 
 	// convert to DXT format
-
+#ifdef USE_OPENMP_DXT
+#pragma omp parallel
+	{
+		int numChunks = 4;
+		int chunkHeight = _height / numChunks;
+		int threadChunkBytes = _width * chunkHeight * 4;
+		int threadDxtChunkBytes = threadChunkBytes / 8;
+		int id = omp_get_thread_num();
+		int offset1 = id*threadChunkBytes;
+		int offset2 = id*threadDxtChunkBytes;
+#pragma omp for 
+		for (int i = 0; i < numChunks; i++)
+		{
+			squish::CompressImage(inputBuffer + offset1, _width, chunkHeight, (unsigned char*)_dxtBuffer + offset2, _dxtFlags, NULL);
+		}
+	}
+#else
 	squish::CompressImage(inputBuffer, _width, _height, _dxtBuffer, _dxtFlags, NULL);
+#endif
+
 
 	//SaveDDS(_width, _height, _dxtBuffer, _dxtBufferSize);
 
@@ -399,8 +435,26 @@ CodecInst::CompressHapAlpha(const unsigned char* inputBuffer, void* outputBuffer
 	unsigned long outputBufferBytesUsed = 0;
 
 	// convert to DXT format
-
+#ifdef USE_OPENMP_DXT
+#pragma omp parallel
+	{
+		int numChunks = 4;
+		int chunkHeight = _height / numChunks;
+		int threadChunkBytes = _width * chunkHeight * 4;
+		int threadDxtChunkBytes = threadChunkBytes / 4;
+		int id = omp_get_thread_num();
+		int offset1 = id*threadChunkBytes;
+		int offset2 = id*threadDxtChunkBytes;
+#pragma omp for 
+		for (int i = 0; i < numChunks; i++)
+		{
+			squish::CompressImage(inputBuffer + offset1, _width, chunkHeight, (unsigned char*)_dxtBuffer + offset2, _dxtFlags, NULL);
+		}
+	}
+#else
 	squish::CompressImage(inputBuffer, _width, _height, _dxtBuffer, _dxtFlags, NULL);
+#endif
+
 
 	//SaveDDS5(_width, _height, _dxtBuffer, _dxtBufferSize);
 	// encode and compress as HAP frame
