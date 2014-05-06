@@ -8,8 +8,8 @@
 #include <hap/YCoCgDXT.h>
 #include <hap/YCoCg.h>
 
-#define USE_OPENMP_DXT
-#define NUM_THREADS 4
+//#define USE_OPENMP_DXT
+#define NUM_THREADS 1
 
 // initalize the codec for compression
 DWORD 
