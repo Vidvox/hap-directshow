@@ -1,9 +1,9 @@
-; Installation Script (C) 2013-2014 RenderHeads Ltd.  All Rights Reserved.
+; Installation Script (C) 2013-2015 RenderHeads Ltd.  All Rights Reserved.
 ; ________________________________________________________________________
 
 !define     PRODUCTNAME             "Hap DirectShow Codec"
-!define     SHORTVERSION            "1.0.6"
-!define     TITLE             "${PRODUCTNAME} ${SHORTVERSION}"
+!define     SHORTVERSION            "1.0.10"
+!define     TITLE					"${PRODUCTNAME} ${SHORTVERSION}"
 
 SetCompressor /Solid lzma
 RequestExecutionLevel admin
@@ -85,6 +85,12 @@ Section "Registry"
 	; Write the uninstall keys for Windows
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "DisplayName" "${PRODUCTNAME}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "Publisher" 'RenderHeads Ltd'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "DisplayVersion" "1.0.10"
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "Version" 0x010a0000
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "VersionMajor" 1
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "VersionMinor" 10
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "EstimatedSize" 2048
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "NoModify" 1
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}" "NoRepair" 1
    	WriteUninstaller "$INSTDIR\uninstall.exe"
