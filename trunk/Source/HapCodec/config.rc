@@ -52,18 +52,21 @@ END
 // Dialog
 //
 
-IDD_DIALOG1 DIALOGEX 0, 0, 134, 133
+IDD_DIALOG1 DIALOGEX 0, 0, 148, 167
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure Hap Codec"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    PUSHBUTTON      "OK",IDC_OK,7,103,55,15
-    PUSHBUTTON      "Cancel",IDC_CANCEL,70,103,55,15
-    CONTROL         "Enable Null Frames",IDC_NULLFRAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,73,77,10
-    LTEXT           "Version 1.0.6",IDC_VERSION,83,0,42,10
-    CONTROL         "Use Snappy Compression",IDC_SNAPPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,97,10
-    LTEXT           "DXT Quality",IDC_STATIC3,7,13,41,11
-    LISTBOX         IDC_DXTQUALITY_OPTIONS,7,24,84,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "OK",IDC_OK,6,144,66,15
+    PUSHBUTTON      "Cancel",IDC_CANCEL,78,144,61,15
+    CONTROL         "Enable Null Frames",IDC_NULLFRAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,84,77,10
+    CONTROL         "Version 1.0.10",IDC_VERSION,"Static",SS_SIMPLE | WS_GROUP,96,0,48,10
+    CONTROL         "Use Snappy Compression",IDC_SNAPPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,72,97,10
+    LTEXT           "DXT Quality",IDC_STATIC3,12,24,41,11
+    LISTBOX         IDC_DXTQUALITY_OPTIONS,12,36,84,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Generate Transparency Background",IDC_GENTRANSBG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,120,129,10
+    CONTROL         "Compression",IDC_STATIC4,"Static",SS_SIMPLE | WS_GROUP,6,6,41,11
+    CONTROL         "Decompression",IDC_STATIC5,"Static",SS_SIMPLE | WS_GROUP,6,102,66,11
 END
 
 IDD_DIALOG2 DIALOGEX 0, 0, 252, 68
@@ -88,8 +91,8 @@ BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 125
-        BOTTOMMARGIN, 125
+        RIGHTMARGIN, 139
+        BOTTOMMARGIN, 159
     END
 
     IDD_DIALOG2, DIALOG
@@ -150,6 +153,7 @@ STRINGTABLE
 BEGIN
     IDS_TIP_NULLFRAMES      "When a frame is identical to the preceding frame, it can be replaced with a nullframe. This indicates that the program reading the video should simply reuse the previous frame. Nullframes can increase compression and speed, but there may be a few editing programs that do no handle them well; disable nullframes if you notice the wrong frame being displayed during still sections of a video."
     IDS_TIP_SNAPPY          "If this enabled, HAP will use the fast lossless Snappy compression."
+    IDS_TIP_GENTRANSPBG     "For previewing videos with transparency on players that don't support transparency, generates a checkered background and renders the transparent video composited over it."
     IDS_TIP_MODE_OPTION     "Specifies the mode for encoding.  HAP stores frames as 24-bit RGB, HAPA stores frames as 32-bit RGBA, HAP-HQ stores frames as 24-bit RGB but has better quality and larger file size."
 END
 

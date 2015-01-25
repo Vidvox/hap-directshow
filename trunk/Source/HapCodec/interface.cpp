@@ -27,8 +27,8 @@
 
 extern BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern BOOL CALLBACK AboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-extern void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality);
-extern void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality);
+extern void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool generateTransparencyBackground);
+extern void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground);
 
 CodecInst* g_currentUICodec = NULL;
 HMODULE hmoduleHap = 0;
@@ -67,6 +67,7 @@ CodecInst::CodecInst(CodecInst::CodecType codecType)
 	_useAlpha = false;
 	_useNullFrames = false;
 	_useSnappy = true;
+	_generateTransparencyBackground = false;
 
 	_isStarted = 0;
 	_supportUncompressedOutput = true;
@@ -80,7 +81,7 @@ BOOL CodecInst::QueryConfigure()
 DWORD CodecInst::About(HWND hwnd) 
 {
 	g_currentUICodec = this;
-	DialogBox(hmoduleHap, MAKEINTRESOURCE(IDD_DIALOG2), hwnd, (DLGPROC)ConfigureDialogProc);
+	DialogBox(hmoduleHap, MAKEINTRESOURCE(IDD_DIALOG2), hwnd, (DLGPROC)AboutDialogProc);
 	g_currentUICodec = NULL;
 	return ICERR_OK;
 }
@@ -193,7 +194,6 @@ DWORD CodecInst::CompressQuery(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpb
 		}
 	}
 
-
 	// Make sure width and height is multiple of 4
 	if ( lpbiIn->biWidth%4 != 0 ||
 		abs(lpbiIn->biHeight)%4 != 0)
@@ -201,7 +201,7 @@ DWORD CodecInst::CompressQuery(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpb
 		return_badformat()
 	}
 
-	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality);
+	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
 
 	// See if the output format is acceptable if need be
 	if ( lpbiOut )
@@ -246,7 +246,7 @@ DWORD CodecInst::CompressGetFormat(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER
 		return_badformat()
 	}
 
-	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality);
+	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
 
 	if (_codecType == HapAlpha && lpbiIn->biBitCount != 32)
 	{
@@ -324,7 +324,6 @@ DWORD CodecInst::GetInfo(ICINFO* icinfo, DWORD dwSize)
 // check if the codec can decompress the given format to the desired format
 DWORD CodecInst::DecompressQuery(const LPBITMAPINFOHEADER lpbiIn, const LPBITMAPINFOHEADER lpbiOut)
 {
-#if 1
 	if (_codecType != Hap &&
 		_codecType != HapAlpha &&
 		_codecType != HapQ)
@@ -332,6 +331,7 @@ DWORD CodecInst::DecompressQuery(const LPBITMAPINFOHEADER lpbiIn, const LPBITMAP
 		return_badformat();
 	}
 
+	// Check input format
 	if (_codecType == Hap)
 	{
 		if (lpbiIn->biCompression != FOURCC_HAP && lpbiIn->biCompression != FOURCC_hap)
@@ -374,6 +374,7 @@ DWORD CodecInst::DecompressQuery(const LPBITMAPINFOHEADER lpbiIn, const LPBITMAP
 		return_badformat();
 	}
 
+	// Check output format
 	if (!lpbiOut)
 	{
 		return (DWORD)ICERR_OK;
@@ -427,7 +428,10 @@ DWORD CodecInst::DecompressQuery(const LPBITMAPINFOHEADER lpbiIn, const LPBITMAP
 
 	if ( lpbiIn->biWidth != lpbiOut->biWidth )
 		return_badformat();
-#endif
+
+	// Load settings to determine any decompresison overrides
+	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
+
 	return (DWORD)ICERR_OK;
 }
 
