@@ -127,6 +127,8 @@ public:
 	bool					_useAlpha;
 	bool					_useNullFrames;
 	bool					_useSnappy;
+	bool					_generateTransparencyBackground;
+
 	unsigned int compressed_size;
 
 	CodecInst(CodecType codecType);

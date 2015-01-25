@@ -10,8 +10,8 @@ extern CodecInst* g_currentUICodec;
 
 const char *dxtQuality_options[] = {"Very High", "High - default", "Low"};
 
-extern void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality);
-extern void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality);
+extern void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool generateTransparencyBackground);
+extern void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground);
 
 HWND CreateTooltip(HWND hwnd)
 {
@@ -47,6 +47,7 @@ struct { UINT item; UINT tip; } item2tip[] =
 	{ IDC_NULLFRAMES,	IDS_TIP_NULLFRAMES	},
 	{ IDC_SNAPPY,		IDS_TIP_SNAPPY		},
 	{ IDC_MODE_OPTIONS,	IDS_TIP_MODE_OPTION},
+	{ IDC_GENTRANSBG,	IDS_TIP_GENTRANSPBG		},
 	{ 0,0 }
 };
 
@@ -115,10 +116,11 @@ BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 {
 	if (uMsg == WM_INITDIALOG)
 	{
-		bool nullframes=false;
-		bool snappy=true;
+		bool nullframes = false;
+		bool snappy = true;
+		bool generateTransparencyBackground = false;
 		int dxtQuality = 1;
-		LoadRegistrySettings(&nullframes, &snappy, &dxtQuality);
+		LoadRegistrySettings(&nullframes, &snappy, &dxtQuality, &generateTransparencyBackground);
 
 		HWND hwndItem;
 		/*= GetDlgItem(hwndDlg, IDC_MODE_OPTIONS);
@@ -134,6 +136,7 @@ BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 
 		CheckDlgButton(hwndDlg, IDC_NULLFRAMES, nullframes);
 		CheckDlgButton(hwndDlg, IDC_SNAPPY, snappy);
+		CheckDlgButton(hwndDlg, IDC_GENTRANSBG, generateTransparencyBackground);
 
 		// Disable the quality dialog for HAPQ
 		if (g_currentUICodec != NULL)
@@ -168,12 +171,13 @@ BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 		{
 			bool nullframes=(IsDlgButtonChecked(hwndDlg, IDC_NULLFRAMES) == BST_CHECKED);
 			bool snappy=(IsDlgButtonChecked(hwndDlg, IDC_SNAPPY) == BST_CHECKED);
+			bool generateTransparencyBackground=(IsDlgButtonChecked(hwndDlg, IDC_GENTRANSBG) == BST_CHECKED);
 
 			int dxtQuality = (int)SendDlgItemMessage(hwndDlg, IDC_DXTQUALITY_OPTIONS, LB_GETCURSEL, 0, 0);
 			if ( dxtQuality <0 || dxtQuality >=3 )
 				dxtQuality=1;
 
-			StoreRegistrySettings(nullframes, snappy, dxtQuality);
+			StoreRegistrySettings(nullframes, snappy, dxtQuality, generateTransparencyBackground);
 		
 			EndDialog(hwndDlg, 0);
 		}

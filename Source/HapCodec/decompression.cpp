@@ -31,7 +31,7 @@ CodecInst::DecompressBegin(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpbiOut
 	_width = lpbiIn->biWidth;
 	_height = lpbiIn->biHeight;
 
-	if (lpbiOut->biCompression == 0)
+	if (lpbiOut->biCompression == BI_RGB)
 	{
 		_format = lpbiOut->biBitCount;
 
@@ -99,6 +99,80 @@ Convert32bppTo24bpp(int width, int height, bool swapRedBlue, const unsigned char
 	}
 }
 
+inline void AlphaBlend(unsigned char* result, const unsigned char* fg, const unsigned char* bg)
+{
+	unsigned int alpha = fg[3] + 1;
+	unsigned int inv_alpha = 256 - fg[3];
+	result[0] = (unsigned char)((alpha * fg[0] + inv_alpha * bg[0]) >> 8);
+	result[1] = (unsigned char)((alpha * fg[1] + inv_alpha * bg[1]) >> 8);
+	result[2] = (unsigned char)((alpha * fg[2] + inv_alpha * bg[2]) >> 8);
+}
+
+void
+Blend32bppTo24bppChecker(int width, int height, bool swapRedBlue, const unsigned char* a, unsigned char* b)
+{
+	unsigned int checkerA = 0xff666666;
+	unsigned int checkerB = 0xff999999;
+	int numPixels = width * height;
+	for (int i = 0; i < numPixels; i++)
+	{
+		b[0] = a[0];
+		b[1] = a[1];
+		b[2] = a[2];
+
+		int x = (i % width) / 64;
+		int y = i / (64*width);
+		unsigned int checker = checkerA;
+		if (((x+y)&1) == 0)
+			checker = checkerB;
+
+		AlphaBlend(b, a, (const unsigned char*)&checker);
+
+		if (swapRedBlue)
+		{
+			unsigned char temp = b[0];
+			b[0] = b[2];
+			b[2] = temp;
+		}
+
+		a += 4;
+		b += 3;
+	}
+}
+
+void
+Blend32bppTo32bppChecker(int width, int height, bool swapRedBlue, const unsigned char* a, unsigned char* b)
+{
+	unsigned int checkerA = 0x00666666;
+	unsigned int checkerB = 0x00999999;
+	int numPixels = width * height;
+	for (int i = 0; i < numPixels; i++)
+	{
+		b[0] = a[0];
+		b[1] = a[1];
+		b[2] = a[2];
+		b[3] = a[3];
+
+		int x = (i % width) / 64;
+		int y = i / (64*width);
+		unsigned int checker = checkerA;
+		if (((x+y)&1) == 0)
+			checker = checkerB;
+
+		AlphaBlend(b, a, (const unsigned char*)&checker);
+
+		if (swapRedBlue)
+		{
+			unsigned char temp = b[0];
+			b[0] = b[2];
+			b[2] = temp;
+		}
+
+		a += 4;
+		b += 4;
+	}
+}
+
 // Called to decompress a frame, the actual decompression will be
 // handed off to other functions based on the frame type.
 DWORD CodecInst::Decompress(ICDECOMPRESS* icinfo, DWORD dwSize) 
@@ -153,7 +227,14 @@ DWORD CodecInst::Decompress(ICDECOMPRESS* icinfo, DWORD dwSize)
 				squish::DecompressImage(_buffer, _width, _height, _dxtBuffer, _dxtFlags);
 
 				// Convert 32-bit to 24-bit and swap red-blue channels
-				Convert32bppTo24bpp(_width, _height, true, _buffer, _out);
+				if (_generateTransparencyBackground && outputBufferTextureFormat == HapTextureFormat_RGBA_DXT5)
+				{
+					Blend32bppTo24bppChecker(_width, _height, true, _buffer, _out);
+				}
+				else
+				{
+					Convert32bppTo24bpp(_width, _height, true, _buffer, _out);
+				}	
 			}
 
 			icinfo->lpbiOutput->biSizeImage = _length;
@@ -182,7 +263,14 @@ DWORD CodecInst::Decompress(ICDECOMPRESS* icinfo, DWORD dwSize)
 				squish::DecompressImage(_buffer, _width, _height, _dxtBuffer, _dxtFlags);
 
 				// Swap red-blue channels
-				ConvertBGRAtoRGBA(_width, _height, _buffer, _out);
+				if (_generateTransparencyBackground && outputBufferTextureFormat == HapTextureFormat_RGBA_DXT5)
+				{
+					Blend32bppTo32bppChecker(_width, _height, true, _buffer, _out);
+				}
+				else
+				{
+					ConvertBGRAtoRGBA(_width, _height, _buffer, _out);
+				}
 			}
 
 			icinfo->lpbiOutput->biSizeImage = _length;
