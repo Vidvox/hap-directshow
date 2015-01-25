@@ -20,7 +20,9 @@ CodecInst::CompressBegin(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpbiOut)
 		CompressEnd();
 	}
 	_isStarted = 0;
+#ifdef USE_OPENMP_DXT
 	omp_set_num_threads(NUM_THREADS);
+#endif
 
 	if ( int error = CompressQuery(lpbiIn, lpbiOut) != ICERR_OK )
 	{
@@ -105,12 +107,12 @@ void
 ConvertBGRAtoRGBA(int width, int height, const unsigned char* a, unsigned char* b)
 {
 	int numPixels = width * height;
-#pragma omp parallel
+//#pragma omp parallel
 	{
-		int id = omp_get_thread_num();
+		int id = 0;//omp_get_thread_num();
 		const unsigned char* aa = a + (numPixels * 4 / NUM_THREADS) * id;
 		unsigned char* bb = b + (numPixels * 4 / NUM_THREADS) * id;
-	#pragma omp for
+//	#pragma omp for
 		for (int i = 0; i < numPixels; i++)
 		{
 			bb[0] = aa[2];
@@ -128,12 +130,12 @@ void
 Convert24bppTo32bpp(int width, int height, bool swapRedBlue, const unsigned char* a, unsigned char* b)
 {
 	int numPixels = width * height;
-#pragma omp parallel
+//#pragma omp parallel
 	{
-		int id = omp_get_thread_num();
+		int id = 0;//omp_get_thread_num();
 		const unsigned char* aa = a + (numPixels * 3 / NUM_THREADS) * id;
 		unsigned char* bb = b + (numPixels * 4 / NUM_THREADS) * id;
-#pragma omp for
+//#pragma omp for
 		for (int i = 0; i < numPixels; i++)
 		{
 			bb[0] = aa[0];
