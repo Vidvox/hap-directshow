@@ -2,7 +2,7 @@
 ; ________________________________________________________________________
 
 !define     PRODUCTNAME             "Hap DirectShow Codec"
-!define     SHORTVERSION            "1.0.10"
+!define     SHORTVERSION            "1.0.12"
 !define     TITLE					"${PRODUCTNAME} ${SHORTVERSION}"
 
 SetCompressor /Solid lzma

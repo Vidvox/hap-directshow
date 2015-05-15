@@ -10,25 +10,10 @@
 #define return_badformat() return (DWORD)ICERR_BADFORMAT;
 //#define return_badformat() { char msg[256];sprintf(msg,"Returning error on line %d", __LINE__);MessageBox (HWND_DESKTOP, msg, "Error", MB_OK | MB_ICONEXCLAMATION); return (DWORD)ICERR_BADFORMAT; }
 
-// Test for MMX, SSE, SSE2, and SSSE3 support
-/*bool DetectFlags(){
-	int CPUInfo[4];
-	__cpuid(CPUInfo,1);
-	//SSE3 = (CPUInfo[2]&(1<< 0))!=0;
-	SSSE3= (CPUInfo[2]&(1<< 9))!=0;
-#ifndef X64_BUILD
-	SSE  = (CPUInfo[3]&(1<<25))!=0;
-	SSE2 = (CPUInfo[3]&(1<<26))!=0;
-	return (CPUInfo[3]&(1<<23))!=0;
-#else
-	return true;
-#endif	
-}*/
-
 extern BOOL CALLBACK ConfigureDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern BOOL CALLBACK AboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-extern void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool generateTransparencyBackground);
-extern void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground);
+extern void StoreRegistrySettings(bool useSnappy, int dxtQuality, bool generateTransparencyBackground);
+extern void LoadRegistrySettings(bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground);
 
 CodecInst* g_currentUICodec = NULL;
 HMODULE hmoduleHap = 0;
@@ -55,7 +40,6 @@ CodecInst::CodecInst(CodecInst::CodecType codecType)
 
 	_buffer = NULL;
 	_buffer2 = NULL;
-	_prevBuffer = NULL;
 	_dxtBuffer = NULL;
 	_length = 0;
 	_dxtBufferSize = 0;
@@ -64,8 +48,6 @@ CodecInst::CodecInst(CodecInst::CodecType codecType)
 	_width = _height = _format = 0;
 
 	_codecType = codecType;
-	_useAlpha = false;
-	_useNullFrames = false;
 	_useSnappy = true;
 	_generateTransparencyBackground = false;
 
@@ -181,7 +163,7 @@ DWORD CodecInst::CompressQuery(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpb
 	}
 	if (_codecType == HapAlpha)
 	{
-		if (lpbiIn->biBitCount != 32)
+		if (lpbiIn->biBitCount != 32 && lpbiIn->biBitCount != 24)
 		{
 			return_badformat()
 		}
@@ -201,7 +183,7 @@ DWORD CodecInst::CompressQuery(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpb
 		return_badformat()
 	}
 
-	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
+	LoadRegistrySettings(&_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
 
 	// See if the output format is acceptable if need be
 	if ( lpbiOut )
@@ -220,8 +202,6 @@ DWORD CodecInst::CompressQuery(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpb
 		if ( _codecType == HapAlpha && lpbiOut->biCompression != FOURCC_HAPA)
 			return_badformat();
 		if ( _codecType == HapQ && lpbiOut->biCompression != FOURCC_HAPQ)
-			return_badformat();
-		if ( _useAlpha && lpbiIn->biBitCount == 32 && lpbiIn->biBitCount != lpbiOut->biBitCount )
 			return_badformat();
 	}
 
@@ -246,9 +226,9 @@ DWORD CodecInst::CompressGetFormat(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER
 		return_badformat()
 	}
 
-	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
+	LoadRegistrySettings(&_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
 
-	if (_codecType == HapAlpha && lpbiIn->biBitCount != 32)
+	if (_codecType == HapAlpha && lpbiIn->biBitCount != 32 && lpbiIn->biBitCount != 24)
 	{
 		return_badformat()
 	}
@@ -295,7 +275,7 @@ DWORD CodecInst::GetInfo(ICINFO* icinfo, DWORD dwSize)
 
 	icinfo->dwSize          = sizeof(ICINFO);
 	icinfo->fccType         = ICTYPE_VIDEO;
-	icinfo->dwFlags			= VIDCF_FASTTEMPORALC | VIDCF_FASTTEMPORALD;
+	icinfo->dwFlags			= 0;	//VIDCF_FASTTEMPORALC | VIDCF_FASTTEMPORALD;
 	icinfo->dwVersion		= 0x00010000;
 	icinfo->dwVersionICM	= ICVERSION;
 
@@ -430,7 +410,7 @@ DWORD CodecInst::DecompressQuery(const LPBITMAPINFOHEADER lpbiIn, const LPBITMAP
 		return_badformat();
 
 	// Load settings to determine any decompresison overrides
-	LoadRegistrySettings(&_useNullFrames, &_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
+	LoadRegistrySettings(&_useSnappy, &_dxtQuality, &_generateTransparencyBackground);
 
 	return (DWORD)ICERR_OK;
 }

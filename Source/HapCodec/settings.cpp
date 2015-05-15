@@ -6,14 +6,13 @@
 #include <Windowsx.h>
 #include <intrin.h>
 
-const char* g_settingNameNullFrames = "NullFrames";
 const char* g_settingNameUseSnappy = "UseSnappy";
 const char* g_settingNameDxtQuality = "DXTQuality";
 const char* g_settingNameGenBackground = "GenerateTransparencyBackground";
 
 const char* kRootRegistryKey = "Software\\HapCodec";
 
-void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool generateTransparencyBackground)
+void StoreRegistrySettings(bool useSnappy, int dxtQuality, bool generateTransparencyBackground)
 {
 	DWORD dp;
 	HKEY regkey;
@@ -21,8 +20,6 @@ void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool
 	if ( RegCreateKeyEx(HKEY_CURRENT_USER,kRootRegistryKey,0,NULL,REG_OPTION_NON_VOLATILE,KEY_WRITE,NULL,&regkey,&dp) == ERROR_SUCCESS)
 	{
 		DWORD data = 0;
-		if (nullframes) data = 1;
-		RegSetValueEx(regkey,g_settingNameNullFrames,0,REG_DWORD,(unsigned char*)&data,4);
 		if (useSnappy) data = 1; else data = 0;
 		RegSetValueEx(regkey,g_settingNameUseSnappy,0,REG_DWORD,(unsigned char*)&data,4);
 		if (generateTransparencyBackground) data = 1; else data = 0;
@@ -32,21 +29,13 @@ void StoreRegistrySettings(bool nullframes, bool useSnappy, int dxtQuality, bool
 	}
 }
 
-void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground)
+void LoadRegistrySettings(bool* useSnappy, int* dxtQuality, bool* generateTransparencyBackground)
 {
 	HKEY regkey;
 	unsigned char data[]={0,0,0,0,0,0,0,0};
 	DWORD size=sizeof(data);
 	if ( RegOpenKeyEx(HKEY_CURRENT_USER,kRootRegistryKey,0,KEY_READ,&regkey) == ERROR_SUCCESS)
 	{
-		if (nullFrames != NULL)
-		{
-			if (ERROR_SUCCESS == RegQueryValueEx(regkey,g_settingNameNullFrames,0,NULL,data,&size))
-			{
-				*nullFrames = (data[0]>0);
-				size=sizeof(data);
-			}
-		}
 		if (useSnappy != NULL)
 		{
 			if (ERROR_SUCCESS == RegQueryValueEx(regkey,g_settingNameUseSnappy,0,NULL,data,&size))
@@ -94,7 +83,6 @@ void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bo
 		const char* appName = "settings";
 		const char* iniFilename = "hapcodec.ini";
 
-		bool nf = GetPrivateProfileInt(appName, g_settingNameNullFrames, false, iniFilename)>0;
 		bool snappy = GetPrivateProfileInt(appName, g_settingNameUseSnappy, true, iniFilename)>0;
 		int dxtQ = GetPrivateProfileInt(appName, g_settingNameDxtQuality, 1, iniFilename);
 		bool genBg = GetPrivateProfileInt(appName, g_settingNameGenBackground, false, iniFilename)>0;
@@ -102,8 +90,7 @@ void LoadRegistrySettings(bool* nullFrames, bool* useSnappy, int* dxtQuality, bo
 		{
 			dxtQ = 1;
 		} 
-		StoreRegistrySettings(nf, snappy, dxtQ, genBg);
-		if (nullFrames != NULL) *nullFrames = nf;
+		StoreRegistrySettings(snappy, dxtQ, genBg);
 		if (useSnappy != NULL) *useSnappy = snappy;
 		if (dxtQuality != NULL) *dxtQuality = dxtQ;
 		if (generateTransparencyBackground != NULL) *generateTransparencyBackground = genBg;

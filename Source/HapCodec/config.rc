@@ -59,13 +59,12 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "OK",IDC_OK,6,144,66,15
     PUSHBUTTON      "Cancel",IDC_CANCEL,78,144,61,15
-    CONTROL         "Enable Null Frames",IDC_NULLFRAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,84,77,10
-    CONTROL         "Version 1.0.10",IDC_VERSION,"Static",SS_SIMPLE | WS_GROUP,96,0,48,10
-    CONTROL         "Use Snappy Compression",IDC_SNAPPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,72,97,10
-    LTEXT           "DXT Quality",IDC_STATIC3,12,24,41,11
-    LISTBOX         IDC_DXTQUALITY_OPTIONS,12,36,84,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Version 1.0.12",IDC_VERSION,"Static",SS_SIMPLE | WS_GROUP,96,0,48,10
+    CONTROL         "Use Snappy Compression",IDC_SNAPPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,80,97,10
+    LTEXT           "DXT Quality",IDC_STATIC3,13,32,41,11
+    LISTBOX         IDC_DXTQUALITY_OPTIONS,13,44,84,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Generate Transparency Background",IDC_GENTRANSBG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,120,129,10
-    CONTROL         "Compression",IDC_STATIC4,"Static",SS_SIMPLE | WS_GROUP,6,6,41,11
+    CONTROL         "Compression",IDC_STATIC4,"Static",SS_SIMPLE | WS_GROUP,7,14,41,11
     CONTROL         "Decompression",IDC_STATIC5,"Static",SS_SIMPLE | WS_GROUP,6,102,66,11
 END
 
@@ -129,12 +128,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", " "
             VALUE "FileDescription", "HAP"
-            VALUE "FileVersion", "1.0.0"
+            VALUE "FileVersion", "1.0.12"
             VALUE "InternalName", "HAP"
-            VALUE "LegalCopyright", "Copyright © 2013"
+            VALUE "LegalCopyright", "Copyright © 2015"
             VALUE "OriginalFilename", "hapcodec.dll"
             VALUE "ProductName", "HAP Codec"
-            VALUE "ProductVersion", "1.0.0"
+            VALUE "ProductVersion", "1.0.12"
         END
     END
     BLOCK "VarFileInfo"

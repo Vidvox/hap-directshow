@@ -109,7 +109,6 @@ public:
 	int						_isStarted;			//if the codec has been properly initalized yet
 	unsigned char*			_buffer;
 	unsigned char*			_buffer2;
-	unsigned char*			_prevBuffer;
 	const unsigned char*	_in;
 	unsigned char*			_out;
 
@@ -124,8 +123,6 @@ public:
 	
 	CodecType				_codecType;
 	int						_dxtQuality;
-	bool					_useAlpha;
-	bool					_useNullFrames;
 	bool					_useSnappy;
 	bool					_generateTransparencyBackground;
 
