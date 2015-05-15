@@ -45,14 +45,12 @@ CodecInst::CompressBegin(LPBITMAPINFOHEADER lpbiIn, LPBITMAPINFOHEADER lpbiOut)
 	
 	_buffer = (unsigned char *)lag_aligned_malloc(_buffer, bufferSize, 16, "buffer");
 	_buffer2 = (unsigned char *)lag_aligned_malloc(_buffer2, bufferSize, 16, "buffer2");
-	_prevBuffer = (unsigned char *)lag_aligned_malloc(_prevBuffer, bufferSize, 16, "prevBuffer");
 
-	if (!_buffer || !_buffer2 || !_prevBuffer || !_dxtBuffer)
+	if (!_buffer || !_buffer2 || !_dxtBuffer)
 	{
 		lag_aligned_free(_dxtBuffer, "dxtBuffer");
 		lag_aligned_free(_buffer, "buffer");
 		lag_aligned_free(_buffer2, "buffer2");
-		lag_aligned_free(_prevBuffer, "prevBuffer");
 		return ICERR_MEMORY;
 	}
 
@@ -80,7 +78,6 @@ CodecInst::CompressEnd()
 		lag_aligned_free(_dxtBuffer, "dxtBuffer");
 		lag_aligned_free(_buffer, "buffer");
 		lag_aligned_free(_buffer2, "buffer2");
-		lag_aligned_free(_prevBuffer, "prevBuffer");
 	}
 	_isStarted = 0;
 	return ICERR_OK;
@@ -290,19 +287,6 @@ CodecInst::Compress(ICCOMPRESS* icinfo, DWORD dwSize)
 			}
 		}
 	}
-	else if (_useNullFrames)
-	{
-		// compare in two parts, video is probably more likely to change in middle than at bottom
-		unsigned int pos = _length / 2 + 15;
-		pos &= (~15);
-		if (!memcmp(_in+pos, _prevBuffer+pos, _length-pos) && !memcmp(_in, _prevBuffer,pos) )
-		{
-			// Set the frame to NULL (duplicate of previous)
-			icinfo->lpbiOutput->biSizeImage =0;
-			*icinfo->lpdwFlags = 0;
-			return ICERR_OK;
-		}
-	}
 
 	if (icinfo->lpckid)
 	{
@@ -315,12 +299,6 @@ CodecInst::Compress(ICCOMPRESS* icinfo, DWORD dwSize)
 	int height = abs((int)icinfo->lpbiInput->biHeight);
 	assert(width == _width);
 	assert(height == _height);
-
-	// Keep a copy of this frame to compare against
-	if (_useNullFrames)
-	{
-		memcpy(_prevBuffer, _in, _length);
-	}
 
 	unsigned char* input = (unsigned char*)_in;
 
